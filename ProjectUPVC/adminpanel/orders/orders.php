@@ -4,6 +4,30 @@ include( "../../functions/connect.php" );
 require_once('config.php');
 $pmenu = $cmenu = null;
 ?>
+<?php
+require_once('config.php');
+
+$pmenu = $cmenu = null;
+
+if (isset($_GET["ProductsId"]) && is_numeric($_GET["ProductsId"])) {
+    $pmenu = $_GET["ProductsId"];
+}
+
+//when submit button is pressed then parent category id and sub-category id are displayed to the user
+if (isset($_POST['submit'])) {
+    if (isset($_POST['TypeProductsId'])) {
+        $pmenu = $_POST['ProductsId'];
+    }
+    if (isset($_POST['TypeProductsId']) && is_numeric($_POST['TypeProductsId'])) {
+        $cmenu = $_POST['TypeProductsId'];
+    }
+    if (isset($_POST['TypeProductsId']) && is_numeric($_POST['TypeProductsId'])) {
+        echo 'Parent Cat Id: ' . $pmenu . ' -> ' . 'Subcategory Id: ' . $cmenu;
+    } else if (isset($_POST['TypeProductsId'])) {
+        echo 'Parent Cat Id: ' . $pmenu;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,6 +53,22 @@ $pmenu = $cmenu = null;
       <script src="js/html5shiv.js"></script>
       <script src="js/respond.min.js"></script>
     <![endif]-->
+     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <title>Dependent dropdown in PHP, MySQL</title>
+        <script type="text/javascript">
+            function autoSubmit() {
+                with (window.document.form) {
+                    /**
+                     * We have if and else block where we check the selected index for parent category(ProductsId) and * accordingly we change the URL in the browser.
+                     */
+                    if (ProductsId.selectedIndex === 0) {
+                        window.location.href = 'orders.php';
+                    } else {
+                        window.location.href = 'orders.php?ProductsId=' + ProductsId.options[ProductsId.selectedIndex].value;
+                    }
+                }
+            }
+        </script>
 </head>
 
 <body>
@@ -45,10 +85,9 @@ $pmenu = $cmenu = null;
           <header class="panel-heading"> سفارشات </header>
           <div class="panel-body">
             <table class="table sliders">
-              <form class="form-horizontal" role="form" method = "post" action="insert.php?page=orders.php"  enctype="multipart/form-data">
-                  
-              <div style="margin-right: 47px; margin-top:20px"><span style=" color: red; font-size: 15px;">*</span>کاربران</div>
+                <form class="form" id="form" name="form" method="post" action="insert.php?page=orders.php"  enctype="multipart/form-data">
 
+              <div style="margin-right: 47px; margin-top:20px"><span style=" color: red; font-size: 15px;">*</span>کاربران</div>
               <select name="User" id="UserId" class="form-control bound-s" style="margin-right: 120px; margin-bottom:40px; width: 200px;height: 40px;"required title="انتخاب مقداری از این فیلد الزامی است.">
                   <option value="">بدون انتخاب</option>
                 <?php
@@ -65,57 +104,16 @@ $pmenu = $cmenu = null;
                 endwhile;
                 ?>
               </select>
-              <tbody style="display: flex; flex-direction: row;">
-                <tr>
-                  <td><div style="margin-right: 50px;"><span style=" color: red; font-size: 15px;">*</span>محصول</div></td>
-                  <td><select name="Products" id="ProductsId" class="form-control bound-s" style="margin-right: 30px; width: 200px; height: 40px;"required title="پر کردن این فیلد الزامی است. ">
-                      <option value="">بدون انتخاب</option>
-                      <?php
-                      $sql = "SELECT * FROM `kind`";
-                      $all_Item = mysqli_query( $conn, $sql );
-                      while ( $Kind = mysqli_fetch_array(
-                          $all_Item, MYSQLI_ASSOC ) ): ;
-                      $selectedId = 1;
-                      ?>
-                      <option 
-                      value="<?php echo $Kind["Id"];?>"> <?php echo $Kind["Name"];?> 
-                      </option>
-                      <?php
-                      endwhile;
-                      ?>
-                    </select></td>
-                </tr>
-                <tr>
-                  <td><div style="margin-right: 80px;">نوع محصول<span style=" color: red; font-size: 15px;">*</span></div></td>
-                  <td><select name="TypeProducts" id="TypeProductsId" class="form-control bound-s" style="margin-right: 30px; width: 200px; height: 40px;"required title="پر کردن این فیلد الزامی است. ">
-                      <option value="">بدون انتخاب</option>
-                      <?php
-                      $sql = "SELECT * FROM `types`";
-                      $all_Item = mysqli_query( $conn, $sql );
-                      while ( $Kind = mysqli_fetch_array(
-                          $all_Item, MYSQLI_ASSOC ) ): ;
-                      $selectedId = 1;
-                      ?>
-                      <option 
-                      value="<?php echo $Kind["Id"];?>"> <?php echo $Kind["Title"];?>
-                      </option>
-                      <?php
-                      endwhile;
-                      ?>
-                      
-                    </select></td>
-                </tr>
-                <tr>
-                  <td><div class="form-group" >
-                    <label class="col-lg-2 control-label" style="width: 15%;  margin-top: -5px; margin-right: 100px; width: 80px; height: 20px;"><span style=" color: red; font-size: 15px;">*</span>ابعاد</label></td>
-                  <td><div class="col-lg-10">
+              
+                <div class="form-group" >
+                    <label class="col-lg-2 control-label" style="width: 15%;  margin-top: -5px; margin-left: 100px; width: 80px; height: 20px;"><span style=" color: red; font-size: 15px;">*</span>ابعاد</label>
+                  <div class="col-lg-10">
                       <div class="row">
-                        <div class="col-lg-2" style="width: 220px; height: 80px;">
+                        <div style="width: 220px; margin-left: 800px; height: 80px;">
                           <input type="text" name="Dimensions" id="DimensionsId" class="form-control" required title="انتخاب مقداری از این فیلد الزامی است.">
                         </div>
                       </div>
-                    </div></td>
-                </tr>
+                    </div>
               </tbody>
             </table>
             <div class="form-group">
@@ -126,20 +124,67 @@ $pmenu = $cmenu = null;
                 <br>
               </div>
             </div>
+            
+           
+            </table>
+          </div>
+        
+          <fieldset>
+          <p class="bg">
+                <label for="ProductsId">محصول</label> <!-- PARENT CATEGORY SELECTION -->
+                <!--onChange event fired and function autoSubmit() is invoked-->
+                <select name="Products" id="ProductsId" class="form-control bound-s" style="margin-right: 30px; width: 200px; height: 40px;" onchange="autoSubmit();">
+          <option value="">بدون انتخاب</option>
+          <?php
+          // Select parent categories. Parent categories are with parent_id=0
+          $sql = "SELECT * FROM `kind`";
+          $result = dbQuery($sql);
+          while ($row = dbFetchAssoc($result)) {
+              echo ("<option value=\"{$row['Id']}\" " . ($pmenu == $row['Id'] ? " selected" : "") . ">{$row['Name']}</option>");
+          }
+          ?>
+       </select>
+            </p>
+            <?php
+      // Check whether parent category was really selected and parent category id is numeric
+     if ($pmenu != '' && is_numeric($pmenu)) {
+                //// select sub-categories categories for a given parent category id
+          $sql = "SELECT * FROM types Where KindId=" . $pmenu;
+             $result = dbQuery($sql);
+                
+                if (dbNumRows($result) > 0) {
+                    ?>
+                    <p class="bg">
+                        <label for="TypeProductsId">نوع محصول</label>
+                        <select name="TypeProducts" id="TypeProductsId" class="form-control bound-s" style="margin-right: 30px; width: 200px; height: 40px;">
+                            <option value="">بدوون انتخاب</option>
+                            <?php
+                            // POPULATE DROP DOWN WITH SUBCATEGORY FROM A GIVEN PARENT CATEGORY
+                            while ($row = dbFetchAssoc($result)) {
+                                echo ("<option value=\"{$row['Id']}\" " . ($cmenu == $row['Id'] ? " selected" : "") . ">{$row['Title']}</option>");
+                            }
+                            ?>
+                        </select>
+                    </p>
+                    <?php
+                }
+            }
+            ?>
+           
+        </fieldset>
             <div class="panel-body">
               <div class="form-group" style="text-align: left; padding-left: 60px;margin-top: 160px">
                 <button name = "submit" type="submit" class="btn btn-success">ثبت</button>
               </div>
             </div>
-            </form>
-            </table>
-          </div>
-        </section>
+             </form>
+          </section>
       
         <section class="panel" style="padding-bottom: 30px" >
            
           <header class="panel-heading"> لیست سفارشات </header>
-          <form class="form-horizontal" role="form" method="post" action="orders.php" enctype="multipart/form-data">
+          <form 
+                class="form-horizontal" role="form" method="post" action="orders.php" enctype="multipart/form-data">
           <table class="table sliders">
             <tbody style="display: flex; flex-direction: row;">
               <tr>
